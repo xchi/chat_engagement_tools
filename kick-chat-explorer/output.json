@@ -1,0 +1,390 @@
+{
+  "fetched_at": "2026-07-26T18:39:57.849713",
+  "channel": {
+    "url": "https://api.kick.com/public/v1/channels",
+    "params": {
+      "slug": "alexis"
+    },
+    "status_code": 200,
+    "ok": true,
+    "data": {
+      "data": [
+        {
+          "broadcaster_user_id": 8824883,
+          "slug": "alexis",
+          "channel_description": "",
+          "banner_picture": "https://files.kick.com/images/channel/8072376/banner_image/9a351781-dd1e-4b9e-a0c1-fb5db254a8fe",
+          "stream": {
+            "url": "",
+            "key": "",
+            "is_live": true,
+            "is_mature": false,
+            "language": "en",
+            "start_time": "2026-07-25T19:02:11Z",
+            "viewer_count": 610,
+            "thumbnail": "https://images.kick.com/video_thumbnails/hurIZ7DTUnzW/YgXkXFipF1nH/480.webp",
+            "custom_tags": [
+              "alexis",
+              "Engl\u0131sh",
+              "irl"
+            ]
+          },
+          "stream_title": "JAPAN DAY 3  - TOKYO w/ @kimmee @nedx  \ud83c\uddef\ud83c\uddf5\u2728 | $2 AI !TTS $5 !MEDIA",
+          "category": {
+            "id": 8549,
+            "name": "IRL",
+            "thumbnail": "https://files.kick.com/images/subcategories/8549/banner/3b142fca-b643-48d9-8ed0-405d454181d1"
+          },
+          "active_subscribers_count": 32,
+          "canceled_subscribers_count": 4
+        }
+      ],
+      "message": "OK"
+    },
+    "error": null
+  },
+  "messages": {
+    "method": "webhook (official events API)",
+    "local_webhook_url": "http://localhost:8000/kick-webhook",
+    "public_key_fetch": {
+      "url": "https://api.kick.com/public/v1/public-key",
+      "status_code": 200,
+      "ok": true,
+      "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq/+l1WnlRrGSolDMA+A8\n6rAhMbQGmQ2SapVcGM3zq8ANXjnhDWocMqfWcTd95btDydITa10kDvHzw9WQOqp2\nMZI7ZyrfzJuz5nhTPCiJwTwnEtWft7nV14BYRDHvlfqPUaZ+1KR4OCaO/wWIk/rQ\nL/TjY0M70gse8rlBkbo2a8rKhu69RQTRsoaf4DVhDPEeSeI5jVrRDGAMGL3cGuyY\n6CLKGdjVEM78g3JfYOvDU/RvfqD7L89TZ3iN94jrmWdGz34JNlEI5hqK8dd7C5EF\nBEbZ5jgB8s8ReQV8H+MkuffjdAj3ajDDX3DOJMIut1lBrUVD1AaSrGCKHooWoL2e\ntwIDAQAB\n-----END PUBLIC KEY-----",
+      "error": null
+    },
+    "subscription": {
+      "url": "https://api.kick.com/public/v1/events/subscriptions",
+      "status_code": 200,
+      "ok": true,
+      "subscription_ids": [
+        "01KYERSQAV6PYA320V7Q4GW8R8"
+      ],
+      "data": {
+        "data": [
+          {
+            "subscription_id": "01KYERSQAV6PYA320V7Q4GW8R8",
+            "name": "chat.message.sent",
+            "version": 1
+          }
+        ],
+        "message": "OK"
+      },
+      "error": null
+    },
+    "cleanup": {
+      "url": "https://api.kick.com/public/v1/events/subscriptions",
+      "ids": [
+        "01KYERSQAV6PYA320V7Q4GW8R8"
+      ],
+      "status_code": 204,
+      "ok": true,
+      "error": null
+    },
+    "duration_seconds": 1200,
+    "ok": true,
+    "messages": [
+      {
+        "username": "KickBot",
+        "content": "@DamaniStrange just gifted 100 KICKs!",
+        "timestamp": "2026-07-26T08:31:44.841821457Z",
+        "signature_verified": true
+      },
+      {
+        "username": "DamaniStrange",
+        "content": "50 followers",
+        "timestamp": "2026-07-26T08:31:55.548815003Z",
+        "signature_verified": true
+      },
+      {
+        "username": "KickBot",
+        "content": "@DamaniStrange just gifted 100 KICKs!",
+        "timestamp": "2026-07-26T08:32:06.080491024Z",
+        "signature_verified": true
+      },
+      {
+        "username": "GodWLovesKatlyn",
+        "content": "belly button sticking out and all",
+        "timestamp": "2026-07-26T08:32:06.838667156Z",
+        "signature_verified": true
+      },
+      {
+        "username": "KickBot",
+        "content": "Join my Discord server! https://discord.gg/jSB3MqEyNe",
+        "timestamp": "2026-07-26T08:32:11.481878038Z",
+        "signature_verified": true
+      },
+      {
+        "username": "vishakha1982",
+        "content": "did u leave him? he is always streaming with ice",
+        "timestamp": "2026-07-26T08:32:12.724348586Z",
+        "signature_verified": true
+      },
+      {
+        "username": "GodWLovesKatlyn",
+        "content": "[emote:1840884:alexisPepeMoney]",
+        "timestamp": "2026-07-26T08:32:37.539587189Z",
+        "signature_verified": true
+      },
+      {
+        "username": "GodWLovesKatlyn",
+        "content": "collar bones \ud83d\ude18 looking so kissable",
+        "timestamp": "2026-07-26T08:33:23.14777058Z",
+        "signature_verified": true
+      },
+      {
+        "username": "@HeySidekick",
+        "content": "Bet $5, Get $200 in FanCash https://go.egency.io/d7ab74ad",
+        "timestamp": "2026-07-26T08:33:26.493234863Z",
+        "signature_verified": true
+      },
+      {
+        "username": "vishakha1982",
+        "content": "he is always driving around i his rolls royce with ice",
+        "timestamp": "2026-07-26T08:33:29.581697261Z",
+        "signature_verified": true
+      },
+      {
+        "username": "123onetwothree123",
+        "content": "alexis could sell her sweaty socks like belle delphine bath water",
+        "timestamp": "2026-07-26T08:33:46.953640894Z",
+        "signature_verified": true
+      },
+      {
+        "username": "XKickClipsLive",
+        "content": "[emote:37226:KEKW]",
+        "timestamp": "2026-07-26T08:33:54.663245171Z",
+        "signature_verified": true
+      },
+      {
+        "username": "vishakha1982",
+        "content": "are you 42 years old",
+        "timestamp": "2026-07-26T08:34:24.678777524Z",
+        "signature_verified": true
+      },
+      {
+        "username": "@ChatTranslator",
+        "content": "vishakha1982 says: [ In Turkish ] you are 42 years old",
+        "timestamp": "2026-07-26T08:34:31.39095624Z",
+        "signature_verified": true
+      },
+      {
+        "username": "GodWLovesKatlyn",
+        "content": "now time to fall back asleep \ud83d\ude2a to the stream \ud83d\udca4\ud83e\udd24",
+        "timestamp": "2026-07-26T08:34:56.025820579Z",
+        "signature_verified": true
+      },
+      {
+        "username": "zzZComatoseZzz",
+        "content": "[emote:5756504:NODDERS]",
+        "timestamp": "2026-07-26T08:35:23.260943381Z",
+        "signature_verified": true
+      },
+      {
+        "username": "Dennissupersaiya",
+        "content": "[emote:5864285:jollyrancherzoopeace][emote:5864329:jollyrancherzooagree]",
+        "timestamp": "2026-07-26T08:35:33.654570099Z",
+        "signature_verified": true
+      },
+      {
+        "username": "Duhsten",
+        "content": "I\u2019ve seen this video before",
+        "timestamp": "2026-07-26T08:35:51.751411603Z",
+        "signature_verified": true
+      },
+      {
+        "username": "vishakha1982",
+        "content": "[emote:5005564:jackiedlJackieDLWTF]",
+        "timestamp": "2026-07-26T08:35:58.639158562Z",
+        "signature_verified": true
+      },
+      {
+        "username": "zzZComatoseZzz",
+        "content": "So, an early start tomorrow morning say 4am again???",
+        "timestamp": "2026-07-26T08:36:01.354346832Z",
+        "signature_verified": true
+      },
+      {
+        "username": "vishakha1982",
+        "content": "[emote:2572088:jackiedlWJDL4]",
+        "timestamp": "2026-07-26T08:36:04.973922783Z",
+        "signature_verified": true
+      },
+      {
+        "username": "123onetwothree123",
+        "content": "its getting crowded. grope incoming",
+        "timestamp": "2026-07-26T08:36:12.92449439Z",
+        "signature_verified": true
+      },
+      {
+        "username": "KickBot",
+        "content": "Click here to donate for $2 text-to-speech / $5 Media https://powerchat.live/alexis?tab=donation",
+        "timestamp": "2026-07-26T08:36:15.224855449Z",
+        "signature_verified": true
+      },
+      {
+        "username": "Kn3Kap",
+        "content": "show them melons moving in train",
+        "timestamp": "2026-07-26T08:36:19.127044302Z",
+        "signature_verified": true
+      },
+      {
+        "username": "ELFHARO",
+        "content": "hey bby",
+        "timestamp": "2026-07-26T08:36:23.483690728Z",
+        "signature_verified": true
+      },
+      {
+        "username": "zzZComatoseZzz",
+        "content": "lol",
+        "timestamp": "2026-07-26T08:36:26.952102445Z",
+        "signature_verified": true
+      },
+      {
+        "username": "zzZComatoseZzz",
+        "content": "sorry boss",
+        "timestamp": "2026-07-26T08:36:29.668551327Z",
+        "signature_verified": true
+      },
+      {
+        "username": "zzZComatoseZzz",
+        "content": "W Stream",
+        "timestamp": "2026-07-26T08:36:38.25359658Z",
+        "signature_verified": true
+      },
+      {
+        "username": "Kn3Kap",
+        "content": "thank u",
+        "timestamp": "2026-07-26T08:37:45.792130943Z",
+        "signature_verified": true
+      },
+      {
+        "username": "Kn3Kap",
+        "content": "mommy",
+        "timestamp": "2026-07-26T08:37:57.935129846Z",
+        "signature_verified": true
+      },
+      {
+        "username": "PoroSadg",
+        "content": "Alexis u kinda cute",
+        "timestamp": "2026-07-26T08:38:09.54816958Z",
+        "signature_verified": true
+      },
+      {
+        "username": "zzZComatoseZzz",
+        "content": "lol",
+        "timestamp": "2026-07-26T08:38:16.828104629Z",
+        "signature_verified": true
+      },
+      {
+        "username": "Kn3Kap",
+        "content": "fanatic ad pops up I\u2019ll click",
+        "timestamp": "2026-07-26T08:38:18.460579438Z",
+        "signature_verified": true
+      },
+      {
+        "username": "meeco21",
+        "content": "isn't that ices bird ?",
+        "timestamp": "2026-07-26T08:38:39.646984507Z",
+        "signature_verified": true
+      },
+      {
+        "username": "zzZComatoseZzz",
+        "content": "she looped up on lounge deprivation",
+        "timestamp": "2026-07-26T08:38:39.9569065Z",
+        "signature_verified": true
+      },
+      {
+        "username": "ELIANTTEAI9",
+        "content": "Ohkay im Back My Heart",
+        "timestamp": "2026-07-26T08:38:40.402214546Z",
+        "signature_verified": true
+      },
+      {
+        "username": "cricket480",
+        "content": "BABYGIRL TIRED AF",
+        "timestamp": "2026-07-26T08:38:56.630972239Z",
+        "signature_verified": true
+      },
+      {
+        "username": "123onetwothree123",
+        "content": "alexis just needs a coffee. i blame kim making her drowsy",
+        "timestamp": "2026-07-26T08:39:05.625947172Z",
+        "signature_verified": true
+      },
+      {
+        "username": "vishakha1982",
+        "content": "are you kimmies mom",
+        "timestamp": "2026-07-26T08:39:16.682460949Z",
+        "signature_verified": true
+      },
+      {
+        "username": "Kn3Kap",
+        "content": "pop a addy",
+        "timestamp": "2026-07-26T08:39:31.776627355Z",
+        "signature_verified": true
+      },
+      {
+        "username": "lospollosislazy6969",
+        "content": "why I always come back to you too",
+        "timestamp": "2026-07-26T08:39:32.535084814Z",
+        "signature_verified": true
+      },
+      {
+        "username": "lospollosislazy6969",
+        "content": "why I always come back to you too",
+        "timestamp": "2026-07-26T08:39:37.540657325Z",
+        "signature_verified": true
+      },
+      {
+        "username": "lospollosislazy6969",
+        "content": "time to get a job",
+        "timestamp": "2026-07-26T08:39:44.928774676Z",
+        "signature_verified": true
+      },
+      {
+        "username": "ELIANTTEAI9",
+        "content": "Y'ALL ALMOST BACK TO YAH RESTING SPOT",
+        "timestamp": "2026-07-26T08:39:46.215977694Z",
+        "signature_verified": true
+      },
+      {
+        "username": "0016",
+        "content": "[emote:5747891:collectiblesLife][emote:5747891:collectiblesLife][emote:5747891:collectiblesLife][emote:5747891:collectiblesLife]",
+        "timestamp": "2026-07-26T08:39:46.986995083Z",
+        "signature_verified": true
+      },
+      {
+        "username": "lospollosislazy6969",
+        "content": "real job",
+        "timestamp": "2026-07-26T08:39:47.336861514Z",
+        "signature_verified": true
+      },
+      {
+        "username": "stinkytwinkie69",
+        "content": "what is the ladies name with the bone hair she is very beautiful",
+        "timestamp": "2026-07-26T08:39:49.608603516Z",
+        "signature_verified": true
+      },
+      {
+        "username": "lospollosislazy6969",
+        "content": "u should worry on old pension",
+        "timestamp": "2026-07-26T08:39:53.933276059Z",
+        "signature_verified": true
+      },
+      {
+        "username": "stinkytwinkie69",
+        "content": "blonde",
+        "timestamp": "2026-07-26T08:39:55.650038117Z",
+        "signature_verified": true
+      },
+      {
+        "username": "meeco21",
+        "content": "she anemic, eat steak",
+        "timestamp": "2026-07-26T08:39:56.562431475Z",
+        "signature_verified": true
+      }
+    ],
+    "error": null
+  }
+}
