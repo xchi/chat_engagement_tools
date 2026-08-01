@@ -14,7 +14,6 @@ import ActivityFeed from "@/components/creator/ActivityFeed";
 import ChannelActionsPanel from "@/components/creator/ChannelActionsPanel";
 import DashboardSidebar from "@/components/creator/DashboardSidebar";
 import ModActions from "@/components/creator/ModActions";
-import SentimentPanel from "@/components/creator/SentimentPanel";
 import SessionInfoBar from "@/components/creator/SessionInfoBar";
 import StreamInfoCard from "@/components/creator/StreamInfoCard";
 import StreamPreview from "@/components/creator/StreamPreview";
@@ -35,8 +34,7 @@ const RAIL_ICONS = [
   { icon: Grip, label: "Widgets" },
 ];
 
-/** Kick creator dashboard clone + our features: SentimentPanel (T8) in the
- * main column, StreamPulsePanel (the chrome-extension port) in the right one. */
+/** Kick creator dashboard clone with StreamPulsePanel in the right column. */
 export default function CreatorPage() {
   return (
     <div className="flex h-screen flex-col">
@@ -49,7 +47,6 @@ export default function CreatorPage() {
         <main className="min-w-0 flex-1 space-y-3 overflow-y-auto p-3">
           <SessionInfoBar />
           <StreamPreview />
-          <SentimentPanel />
           <div className="grid gap-3 md:grid-cols-2">
             <ActivityFeed />
             <ModActions />

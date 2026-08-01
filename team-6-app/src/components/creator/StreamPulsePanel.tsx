@@ -38,6 +38,91 @@ const LEVEL_STYLES: Record<ActivityLevel, { label: string; bar: string }> = {
   hot: { label: "Hot", bar: "bg-chart-5" },
 };
 
+const GAUGE_SEGMENTS: [from: number, to: number, color: string][] = [
+  [0, 20, "var(--chart-5)"],
+  [20, 40, "#f87171"],
+  [40, 60, "var(--chart-3)"],
+  [60, 80, "#4ade80"],
+  [80, 100, "var(--primary)"],
+];
+
+const GAUGE = { cx: 95, cy: 88, r: 70, band: 14 };
+
+function gaugePoint(value: number, r = GAUGE.r): [number, number] {
+  const angle = Math.PI * (1 - value / 100);
+  return [GAUGE.cx + r * Math.cos(angle), GAUGE.cy - r * Math.sin(angle)];
+}
+
+function SentimentGauge({ value }: { value: number }) {
+  const { cx, cy, r, band } = GAUGE;
+  const clampedValue = Math.max(0, Math.min(100, value));
+  const gap = 0.5;
+
+  return (
+    <svg
+      viewBox="0 0 190 106"
+      role="img"
+      aria-label={`Chat sentiment: ${clampedValue} out of 100`}
+      className="h-auto w-full max-w-[190px]"
+    >
+      {GAUGE_SEGMENTS.map(([from, to, color]) => {
+        const [x0, y0] = gaugePoint(from + gap);
+        const [x1, y1] = gaugePoint(to - gap);
+        return (
+          <path
+            key={from}
+            d={`M${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`}
+            fill="none"
+            stroke={color}
+            strokeWidth={band}
+          />
+        );
+      })}
+      <g
+        style={{
+          transform: `rotate(${(clampedValue / 100 - 0.5) * 180}deg)`,
+          transformOrigin: `${cx}px ${cy}px`,
+          transition: "transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}
+      >
+        <line
+          x1={cx}
+          y1={cy}
+          x2={cx}
+          y2={cy - (r - band / 2 - 4)}
+          stroke="var(--foreground)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+      </g>
+      <circle
+        cx={cx}
+        cy={cy}
+        r="5"
+        fill="var(--foreground)"
+        stroke="var(--card)"
+        strokeWidth="2"
+      />
+      <text
+        x={cx - r}
+        y={cy + 14}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-semibold"
+      >
+        NEGATIVE
+      </text>
+      <text
+        x={cx + r}
+        y={cy + 14}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[9px] font-semibold"
+      >
+        POSITIVE
+      </text>
+    </svg>
+  );
+}
+
 /**
  * Stream Pulse — the "Kick Stream Pulse" chrome-extension overlay reborn as
  * a dashboard card (logic in src/lib/chat-pulse.ts). Summarizes the last 30s
@@ -85,8 +170,6 @@ export default function StreamPulsePanel() {
   }, [events]);
 
   const mood = MOOD_LABELS.find(([min]) => summary.sentiment >= min)?.[1];
-  const positive = summary.sentiment >= 50;
-
   return (
     <PanelCard
       icon={Activity}
@@ -99,7 +182,7 @@ export default function StreamPulsePanel() {
       }
     >
       <div className="space-y-4 p-4">
-        {/* Sentiment meter: fill grows from the neutral center toward the mood */}
+        {/* Semicircular sentiment speedometer from the retired sentiment panel. */}
         <div>
           <div className="flex items-baseline justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -110,30 +193,11 @@ export default function StreamPulsePanel() {
               <span className="font-normal text-muted-foreground">/100</span>
             </span>
           </div>
-          <div className="relative mt-2 h-1.5 rounded-full bg-muted">
-            <div
-              className={cn(
-                "absolute inset-y-0 rounded-full",
-                positive ? "bg-chart-2" : "bg-chart-5",
-              )}
-              style={{
-                left: `${Math.min(50, summary.sentiment)}%`,
-                width: `${Math.abs(summary.sentiment - 50)}%`,
-              }}
-            />
-            <div className="absolute inset-y-0 left-1/2 w-px bg-border" />
-            <div
-              className={cn(
-                "absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card",
-                positive ? "bg-chart-2" : "bg-chart-5",
-              )}
-              style={{ left: `${summary.sentiment}%` }}
-            />
-          </div>
-          <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground">
-            <span>NEGATIVE</span>
-            <span className="font-semibold text-foreground">{mood}</span>
-            <span>POSITIVE</span>
+          <div className="mt-1 flex flex-col items-center">
+            <SentimentGauge value={summary.sentiment} />
+            <span className="-mt-1 text-[10px] font-semibold text-foreground">
+              {mood}
+            </span>
           </div>
         </div>
 
