@@ -68,9 +68,9 @@ src/
     features.ts         draft schemas for OUR new features
 ```
 
-The feature components (`VideoPlayer` internals, `PlayerControls`,
-`MomentsGraph`, `ChaptersBar`, `SentimentPanel`) are still stubs with a
-comment describing their responsibility and which task (T#) implements them.
+The remaining feature components (`ChaptersBar`, `SentimentPanel`) are still
+stubs with a comment describing their responsibility and which task (T#)
+implements them.
 
 ## Schemas
 

@@ -49,7 +49,7 @@ card, Channel Actions card, right icon rail).
 **Goal:** make the app feel live. A looping local video presented as a live
 stream, plus the shared **stream clock**.
 
-- Stream clock: `StreamClockProvider` / `useStreamClock()` in `src/lib/stream-clock.tsx`, mounted in the root layout so any component can read it. Page load = stream already 45 min in (`STREAM_START_OFFSET_SECONDS`), so there's history for the features to show. `useViewerCount()` derives the jittering viewer count from the same clock.
+- Stream clock: `StreamClockProvider` / `useStreamClock()` in `src/lib/stream-clock.tsx`, mounted in the root layout so any component can read it. Page load = stream already 5 h in (`STREAM_START_OFFSET_SECONDS`), so there's history for the features to show. `useViewerCount()` derives the jittering viewer count from the same clock.
 - Video: `public/n3on_x_ryan_garcia_day_2.mp4` — 6h21m Kick VOD capture, gitignored; regen command in README Notes. Joining the page tunes in at the live edge (`clock % duration`); overlays show the LIVE badge, uptime timer and jittering viewer count.
 - **Custom `PlayerControls`** (native `<video controls>` can't host overlays): play/pause, volume, current time / total "streamed" time, scrubbable seek bar limited to the already-streamed portion (hover = timestamp tooltip). This seek bar is the surface T6 draws on. Scrubbed back → "GO TO LIVE" returns to the edge.
 - Files: `src/components/viewer/{VideoPlayer,PlayerControls}.tsx`, `src/lib/stream-clock.tsx`
@@ -77,18 +77,19 @@ route handlers serving the mock datasets.
 - Depends on: T0 (can start anytime; datasets get richer via T4/T6/T7/T8).
 - Done when: all routes return typed JSON matching `src/types/`, documented in README ("Mock API").
 
-## T6 — Highlights / Moments graph (FEATURE)
+## T6 — Highlights / Moments graph ✅ (done)
 
 **Goal:** YouTube "most replayed"-style engagement curve rendered **on top of
 the video scrub bar, synchronized with it**. Peaks = past moments with the
 most unique-chatter interaction, so viewers scrubbing can spot and jump to
 meaningful moments.
 
-- Data: `GET /api/highlights` → `HighlightsResponse` (per-bucket unique-chatter intensity + moment metadata) — already derived from the T4 chat dataset by T5; hand-curate moment titles via `curatedMoments` in `src/lib/mocks/highlights.ts` if the auto ones read poorly.
-- UI: curve above/over the seek bar (visible on hover/scrub like YouTube); moment labels on hover; click a peak → seek there; curve extends live as the clock advances.
-- Files: `src/components/viewer/MomentsGraph.tsx`, `src/lib/mocks/highlights.ts`, `src/app/api/highlights/route.ts`
+- Data: `GET /api/highlights?until=` → `HighlightsResponse` (per-bucket unique-chatter intensity + moment metadata) — derived from the T4 chat dataset by T5; `MomentsGraph` refetches each time the clock completes a 30s bucket, so the curve extends live. Hand-curate moment titles via `curatedMoments` in `src/lib/mocks/highlights.ts` if the auto ones read poorly.
+- UI: `MomentsGraph` lives inside the `PlayerControls` seek-bar row, sharing its `[0, liveEdge]` x-axis. Hovering/scrubbing the bar reveals a smoothed SVG area curve above it (Catmull-Rom → Bézier); once revealed it joins the bar's hit area, so clicking a peak seeks there. Green dots mark moments: hovering a moment's time range shows a title + chatter-count pill, clicking a dot snaps to the moment's start.
+- Files: `src/components/viewer/MomentsGraph.tsx`, `src/components/viewer/PlayerControls.tsx`, `src/lib/mocks/highlights.ts`, `src/app/api/highlights/route.ts`
 - Depends on: T3 (custom seek bar), T5.
 - Done when: hovering the bar shows the curve aligned to video time; clicking a peak seeks; new buckets appear over time.
+- Demo note (for T9): the 5 h join offset (T3) puts 10 of the 12 detected moments on the bar at page load; the last two pop in at ~5h28m and ~5h47m uptime, so a live pop-in only shows if the session runs that long. Moment spans render in Kick green over the white curve (brighter while hovered), with intensity floor+gamma emphasis so peaks stand out from ambient chatter.
 
 ## T7 — Live chapters (FEATURE)
 
@@ -103,15 +104,27 @@ chapter's title and when a topic change warrants starting a new one.
 - Depends on: T3 (custom seek bar), T5.
 - Done when: chapters appear over time with a visible "generating" beat, markers align with the scrub bar, and clicking one seeks the video.
 
-## T8 — Sentiment analysis panel (FEATURE)
+## T8 — Sentiment analysis panel (FEATURE) ✅ (done)
 
 **Goal:** creator dashboard panel charting live chat sentiment.
 
 - Data: `GET /api/sentiment` → `SentimentResponse` (score trend −1..1 + positive/neutral/negative breakdown) — already derived from the T4 chat dataset by T5 (real dips where chat gets salty); tune the lexicons in `src/lib/mocks/sentiment.ts` if the mood reads wrong.
-- UI: `SentimentPanel` on `/creator` — trend chart + current breakdown, updating as the clock advances.
+- UI: `SentimentPanel` in `/creator`'s main column, presented as a **hype-o-meter**: semicircular gauge (SALTY → HYPED bands, needle eases to the current score, hype-% readout), plus the SVG line-vs-baseline trend (green above zero, red below), breakdown, and crosshair/keyboard readout of past windows; polls `?until=` on the stream clock every 15s.
 - Files: `src/components/creator/SentimentPanel.tsx`, `src/lib/mocks/sentiment.ts`, `src/app/api/sentiment/route.ts`
 - Depends on: T2, T3 (clock), T5.
 - Done when: the chart visibly moves during a demo and roughly matches the chat's mood.
+
+## T8b — Stream Pulse panel (FEATURE) ✅ (done)
+
+**Goal:** the "Kick Stream Pulse" chrome extension (`../chrome-extension/`)
+ported into the dashboard as a component: a rolling 30s read of chat with a
+sentiment meter, unique chatters, messages/min, calm/warm/hot activity, a
+deterministic AI-style "chat read" sentence and trending emotes.
+
+- Data: `GET /api/chat` over the window `[clock−30, clock)`, polled every 5s.
+- Logic: `src/lib/chat-pulse.ts` — faithful TS port of the extension's `chat-analytics.js` + `emotes.js`; activity thresholds re-tuned to this dataset's unique-chatter quartiles (warm 40 / hot 56).
+- Files: `src/components/creator/StreamPulsePanel.tsx` (right column of `/creator`), `src/lib/chat-pulse.ts`
+- Depends on: T2, T3 (clock), T5.
 
 ## T9 — Demo polish
 
