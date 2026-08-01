@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Kick Stream Pulse",
+  "version": "0.2.0",
+  "description": "A live sentiment and audience dashboard for Kick chat.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://kick.com/*"],
+  "action": {
+    "default_title": "Kick Emote Pulse",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://kick.com/*"],
+      "js": ["emotes.js", "chat-analytics.js", "content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
