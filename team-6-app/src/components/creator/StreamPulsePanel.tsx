@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Activity } from "lucide-react";
 
 import PanelCard from "@/components/creator/PanelCard";
+import { Switch } from "@/components/ui/switch";
 import {
   activityLevel,
   chatInsight,
@@ -132,6 +133,7 @@ function SentimentGauge({ value }: { value: number }) {
  */
 export default function StreamPulsePanel() {
   const clock = useStreamClock();
+  const [enabled, setEnabled] = useState(true);
   const [events, setEvents] = useState<PulseEvent[] | null>(null);
 
   // Poll a stable window edge (multiples of POLL_SECONDS) so each tick
@@ -141,6 +143,8 @@ export default function StreamPulsePanel() {
     Math.floor(clock / POLL_SECONDS) * POLL_SECONDS,
   );
   useEffect(() => {
+    if (!enabled) return;
+
     let cancelled = false;
     fetch(
       `/api/chat?from=${windowEnd - WINDOW_SECONDS}&to=${windowEnd}&limit=1000`,
@@ -157,7 +161,7 @@ export default function StreamPulsePanel() {
     return () => {
       cancelled = true;
     };
-  }, [windowEnd]);
+  }, [enabled, windowEnd]);
 
   const { summary, level, insight, trending } = useMemo(() => {
     const summary = summarize(events ?? [], WINDOW_SECONDS);
@@ -175,13 +179,27 @@ export default function StreamPulsePanel() {
       icon={Activity}
       title="Stream Pulse"
       actions={
-        <span className="mr-1 flex items-center gap-1.5 text-[10px] font-semibold text-muted-foreground">
-          <span className="size-1.5 animate-pulse rounded-full bg-primary" />
-          LIVE · {WINDOW_SECONDS}S
-        </span>
+        <div className="mr-1 flex items-center gap-2">
+          <span className="flex items-center gap-1.5 text-[10px] font-semibold text-muted-foreground">
+            <span
+              className={cn(
+                "size-1.5 rounded-full",
+                enabled ? "animate-pulse bg-primary" : "bg-muted-foreground",
+              )}
+            />
+            {enabled ? `LIVE · ${WINDOW_SECONDS}S` : "OFF"}
+          </span>
+          <Switch
+            size="sm"
+            checked={enabled}
+            onCheckedChange={setEnabled}
+            aria-label="Enable Stream Pulse"
+          />
+        </div>
       }
     >
-      <div className="space-y-4 p-4">
+      {enabled ? (
+        <div className="space-y-4 p-4">
         {/* Semicircular sentiment speedometer from the retired sentiment panel. */}
         <div>
           <div className="flex items-baseline justify-between">
@@ -283,7 +301,16 @@ export default function StreamPulsePanel() {
             </p>
           )}
         </div>
-      </div>
+        </div>
+      ) : (
+        <div className="flex min-h-40 flex-col items-center justify-center px-6 text-center">
+          <Activity className="mb-2 size-6 text-muted-foreground" />
+          <p className="text-sm font-semibold">Stream Pulse is off</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Turn it on to resume live chat insights.
+          </p>
+        </div>
+      )}
     </PanelCard>
   );
 }
