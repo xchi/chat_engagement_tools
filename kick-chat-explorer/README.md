@@ -95,7 +95,8 @@ so this needs to be redone each session:
    python main.py alexis --duration 30
    ```
 
-The script subscribes to `chat.message.sent` for the channel, waits for
+The script subscribes to `chat.message.sent` (plus `livestream.status.updated`
+and `livestream.metadata.updated` unless you pass `--no-brb`), waits for
 events to arrive on `http://localhost:8000/kick-webhook`, and unsubscribes
 when done (so you don't accumulate stale subscriptions against Kick's
 per-app limits).
@@ -135,14 +136,80 @@ feed instead (no ngrok/dashboard setup needed). It's kept in the code as
 machine and from a plain `curl`. Left in for reference; don't expect it to
 work without finding another way to resolve the chatroom id.
 
+## BRB detection
+
+**Kick has no BRB event.** The documented event list is `chat.message.sent`,
+`channel.followed`, `channel.subscription.{new,renewal,gifts}`,
+`channel.reward.redemption.updated`, `livestream.status.updated`,
+`livestream.metadata.updated`, `moderation.banned` and `kicks.gifted` — nothing
+that says "the streamer stepped away". So this script *infers* it from three
+signals and keeps a `live` / `brb` / `offline` / `unknown` state machine:
+
+| Signal | Event | Reads as BRB when |
+| --- | --- | --- |
+| Title / category change | `livestream.metadata.updated` | title or category matches `brb`, `be right back`, `afk`, `back in 5`, `quick break`, … |
+| Live status flip | `livestream.status.updated` | *not* a BRB — `is_live=false` is tracked as `offline` (the stream ended) |
+| Chat | `chat.message.sent` | the broadcaster types a BRB phrase; cleared by "i'm back" / "we're live" / "back now" |
+
+It also seeds the starting state from the initial channel lookup, so a stream
+that is *already* sitting on a BRB screen when you start is reported as `brb`
+rather than `unknown`.
+
+Transitions print to the terminal as they happen:
+
+```
+🟡 [14:02:11] live → brb (chat.message.sent: alexis said "brb food, 5 min" (matched "brb"))
+🟢 [14:07:48] brb → live (livestream.metadata.updated: BRB marker gone from title: "Ranked grind")
+```
+
+and a summary prints at the end (episode count + total time away).
+
+Flags:
+
+```bash
+# default: broadcaster's own chat counts as a signal
+python main.py alexis --duration 300
+
+# also trust moderators ("streamer is afk for a bit")
+python main.py alexis --brb-chat mods
+
+# ignore chat entirely; trust only the stream title and live status
+python main.py alexis --brb-chat off
+
+# turn it off, and don't subscribe to the livestream.* events at all
+python main.py alexis --no-brb
+```
+
+`--brb-chat any` exists but is noisy — viewers say "brb" constantly.
+
+**Accuracy caveats.** These are heuristics, not ground truth:
+
+- A streamer who never changes their title and never types anything won't be
+  detected as away at all.
+- A title change unrelated to the break only clears a BRB that the *title* set,
+  so a chat-signalled break isn't cancelled by an unrelated title edit.
+- Phrases like "back to the grind" or "welcome back everyone" deliberately do
+  not count as returning.
+- When BRB detection is on, `--limit` no longer ends the run early — it caps
+  stored messages, but the script keeps watching for state changes until
+  `--duration` is up.
+
+Every matched signal (including ones that didn't change the state) is recorded
+under `messages.brb.signals` in `output.json`, so you can see what the detector
+saw and tune `BRB_PATTERNS` / `BACK_PATTERNS` in `main.py` for a given channel.
+
 ## Output
 
-- Terminal: channel info printed immediately; in webhook mode, a "Listening
-  to chat.message.sent..." message while it waits up to `--duration` seconds
-  (default 20) for events, then whatever it captured.
+- Terminal: channel info printed immediately; in webhook mode, a "Subscribed
+  to ..." message while it waits up to `--duration` seconds (default 20) for
+  events, live BRB state changes as they happen, then the captured chat and a
+  stream-state summary.
 - `output.json`: full details of every step — channel lookup, public-key
-  fetch, the webhook subscription (and its cleanup/delete call), and every
-  captured message — for inspection.
+  fetch, the webhook subscription (and its cleanup/delete call), every
+  captured message, a bounded log of every raw event received
+  (`messages.events`, capped at 500 so a busy channel doesn't balloon the
+  file), and the BRB state machine's transitions and signals
+  (`messages.brb`) — for inspection.
 
 ## How chat capture works (and its limitations)
 
