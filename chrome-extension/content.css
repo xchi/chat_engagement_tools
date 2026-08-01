@@ -4,3 +4,6 @@
 html[data-ksp-activity="calm"] #chatroom-messages [data-index]>div>div,html[data-ksp-activity="calm"] [data-chat-entry],html[data-ksp-activity="calm"] [data-testid*="chat-message"],html[data-ksp-activity="calm"] [class*="chat-entry"],html[data-ksp-activity="calm"] [class*="chat-message"]{background-color:rgba(83,252,24,.035)!important;border-left:2px solid rgba(83,252,24,.35)!important}
 html[data-ksp-activity="warm"] #chatroom-messages [data-index]>div>div,html[data-ksp-activity="warm"] [data-chat-entry],html[data-ksp-activity="warm"] [data-testid*="chat-message"],html[data-ksp-activity="warm"] [class*="chat-entry"],html[data-ksp-activity="warm"] [class*="chat-message"]{background-color:rgba(255,189,63,.08)!important;border-left:2px solid rgba(255,189,63,.75)!important}
 html[data-ksp-activity="hot"] #chatroom-messages [data-index]>div>div,html[data-ksp-activity="hot"] [data-chat-entry],html[data-ksp-activity="hot"] [data-testid*="chat-message"],html[data-ksp-activity="hot"] [class*="chat-entry"],html[data-ksp-activity="hot"] [class*="chat-message"]{background-color:rgba(255,64,87,.11)!important;border-left:2px solid rgba(255,64,87,.9)!important}
+#kick-stream-pulse header{cursor:grab;user-select:none;touch-action:none}
+#kick-stream-pulse.ksp-dragging{box-shadow:0 26px 80px rgba(0,0,0,.72)}
+#kick-stream-pulse.ksp-dragging header{cursor:grabbing}

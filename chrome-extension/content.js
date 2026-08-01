@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const DEFAULTS = { enabled: true, colorChat: true, windowSeconds: 30, warmThreshold: 5, hotThreshold: 12 };
+  const DEFAULTS = { enabled: true, colorChat: true, windowSeconds: 30, warmThreshold: 5, hotThreshold: 12, panelX: null, panelY: null };
   const MESSAGE_SELECTOR = [
     "#chatroom-messages [data-index]",
     "[data-chat-entry]",
@@ -53,7 +53,63 @@
       saveSettings({ enabled: false });
     });
     document.documentElement.appendChild(panel);
+    enableDragging();
+    applySavedPosition();
     applyVisibility();
+  }
+
+  function clampPosition(x, y) {
+    const margin = 8;
+    return {
+      x: Math.max(margin, Math.min(x, window.innerWidth - panel.offsetWidth - margin)),
+      y: Math.max(margin, Math.min(y, window.innerHeight - panel.offsetHeight - margin))
+    };
+  }
+
+  function placePanel(x, y) {
+    const position = clampPosition(x, y);
+    panel.style.left = `${position.x}px`;
+    panel.style.top = `${position.y}px`;
+    panel.style.right = "auto";
+    return position;
+  }
+
+  function applySavedPosition() {
+    if (Number.isFinite(settings.panelX) && Number.isFinite(settings.panelY)) placePanel(settings.panelX, settings.panelY);
+  }
+
+  function enableDragging() {
+    const handle = panel.querySelector("header");
+    let drag = null;
+    handle.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || event.target.closest("button")) return;
+      const rect = panel.getBoundingClientRect();
+      drag = { pointerId: event.pointerId, offsetX: event.clientX - rect.left, offsetY: event.clientY - rect.top };
+      handle.setPointerCapture(event.pointerId);
+      panel.classList.add("ksp-dragging");
+      event.preventDefault();
+    });
+    handle.addEventListener("pointermove", (event) => {
+      if (drag && event.pointerId === drag.pointerId) placePanel(event.clientX - drag.offsetX, event.clientY - drag.offsetY);
+    });
+    const finish = (event) => {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      const position = placePanel(event.clientX - drag.offsetX, event.clientY - drag.offsetY);
+      settings.panelX = position.x;
+      settings.panelY = position.y;
+      saveSettings({ panelX: position.x, panelY: position.y });
+      drag = null;
+      panel.classList.remove("ksp-dragging");
+    };
+    handle.addEventListener("pointerup", finish);
+    handle.addEventListener("pointercancel", finish);
+    window.addEventListener("resize", () => {
+      if (!panel.style.left) return;
+      const rect = panel.getBoundingClientRect();
+      const position = placePanel(rect.left, rect.top);
+      settings.panelX = position.x;
+      settings.panelY = position.y;
+    });
   }
 
   function messageRoot(node) {
