@@ -67,15 +67,16 @@ clock**.
 - Depends on: T3 (stream clock), T1/T2 (panels exist).
 - Done when: both pages show the same chat flowing live; scrubbing the video does NOT rewind chat (chat follows the live edge, like real Kick).
 
-## T5 — Mock API layer
+## T5 — Mock API layer ✅ (done)
 
 **Goal:** features consume "an API" as they would in production — Next.js
 route handlers serving the mock datasets.
 
 - Routes: `GET /api/channel`, `GET /api/chat?from=&to=` (offset-seconds range), `GET /api/highlights?until=`, `GET /api/chapters?until=`, `GET /api/sentiment?until=` — `until` = stream-clock position, so responses only contain data "up to now".
-- Files: `src/app/api/*/route.ts`, reading from `src/lib/mocks/*`; response types in `src/types/`.
+- Files: `src/app/api/*/route.ts`, reading from `src/lib/mocks/*`; response types in `src/types/` (added `ChatResponse` to `src/types/kick.ts`).
 - Depends on: T0 (can start anytime; datasets get richer via T4/T6/T7/T8).
 - Done when: all routes return typed JSON matching `src/types/`, documented in README.
+- Note: `highlights`/`chapters`/`sentiment` mocks are still empty arrays (T6/T7/T8 not built yet) — the routes already filter by `until` correctly, so they'll "just work" once those mocks are filled in.
 
 ## T6 — Highlights / Moments graph (FEATURE)
 

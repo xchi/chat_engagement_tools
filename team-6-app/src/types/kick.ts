@@ -69,3 +69,8 @@ export interface KickChatMessage {
    * messages to the stream clock without re-deriving from timestamps */
   offset_seconds?: number;
 }
+
+/** Response of GET /api/chat (T5). */
+export interface ChatResponse {
+  messages: KickChatMessage[];
+}

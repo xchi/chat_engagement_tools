@@ -56,7 +56,7 @@ src/
     viewer/page.tsx     viewer page (T1 ✅)
     creator/page.tsx    creator dashboard (T2 ✅)
     globals.css         Kick dark theme mapped onto shadcn tokens
-    api/                mock API route handlers (added in T5)
+    api/                mock API route handlers (T5 ✅)
   components/
     ui/                 shadcn/ui primitives (generated — restyle via tokens)
     shared/             used by both pages (TopNav, ChatPanel, ...)
@@ -80,7 +80,25 @@ comment describing their responsibility and which task (T#) implements them.
 - `src/types/features.ts` is ours (highlights/moments, chapters, sentiment).
 
 All types are **drafts** — evolve them as the features firm up; just keep the
-mock API responses (`src/lib/mocks/`, later `src/app/api/`) in sync.
+mock API responses (`src/lib/mocks/`, served via `src/app/api/`) in sync.
+
+## API routes (T5)
+
+Route handlers under `src/app/api/` serve the datasets in `src/lib/mocks/`
+as typed JSON, filtered by the stream-clock position when a query param is
+given:
+
+| Route | Query params | Response type |
+| --- | --- | --- |
+| `GET /api/channel` | — | `KickChannel` (`src/types/kick.ts`) |
+| `GET /api/chat` | `from`, `to` (offset-seconds range) | `ChatResponse` (`src/types/kick.ts`) |
+| `GET /api/highlights` | `until` (stream-clock position) | `HighlightsResponse` (`src/types/features.ts`) |
+| `GET /api/chapters` | `until` | `ChaptersResponse` (`src/types/features.ts`) |
+| `GET /api/sentiment` | `until` | `SentimentResponse` (`src/types/features.ts`) |
+
+`highlights`/`chapters`/`sentiment` currently return empty arrays since
+their mock datasets aren't filled in yet (T6/T7/T8); the `until` filtering
+is already correct so those routes need no changes once the data lands.
 
 ## Notes
 
