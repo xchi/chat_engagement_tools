@@ -29,6 +29,8 @@ export interface Moment {
   /** short label shown while hovering/scrubbing */
   title: string;
   description?: string;
+  /** set when the spike was chat spamming a Kick emote — render its image instead of the title */
+  emote?: { id: string; name: string };
   unique_chatters: number;
   /** 0..1 */
   peak_intensity: number;

@@ -40,21 +40,28 @@ const TOKEN_STOPWORDS = new Set([
   "chat", "stream", "one", "out", "now", "here", "there", "have", "has",
 ]);
 
+interface DominantToken {
+  count: number;
+  display: string;
+  /** Kick emote id, when the token was (at least once) spammed as an emote */
+  emoteId: string | null;
+}
+
 /** The word/emote chat spammed the most inside `[start, end)`, if any. */
 function dominantToken(
   messages: KickChatMessage[],
   start: number,
   end: number,
-): string | null {
-  const counts = new Map<string, { count: number; display: string }>();
+): DominantToken | null {
+  const counts = new Map<string, DominantToken>();
   for (const message of messages) {
     const offset = message.offset_seconds ?? 0;
     if (offset < start || offset >= end) continue;
     if (message.username === "KickBot") continue;
     for (const raw of message.content.split(/\s+/)) {
       if (raw.startsWith("@")) continue; // mentions aren't topics
-      const emote = /^\[emote:\d+:(.+)\]$/.exec(raw);
-      const cleaned = (emote ? emote[1] : raw).replace(
+      const emote = /^\[emote:(\d+):(.+)\]$/.exec(raw);
+      const cleaned = (emote ? emote[2] : raw).replace(
         /^[^\p{L}\p{N}\p{Emoji}]+|[^\p{L}\p{N}\p{Emoji}]+$/gu,
         "",
       );
@@ -62,16 +69,24 @@ function dominantToken(
       const key = cleaned.toLowerCase();
       if (TOKEN_STOPWORDS.has(key)) continue;
       const entry = counts.get(key);
-      if (entry) entry.count++;
-      else counts.set(key, { count: 1, display: cleaned });
+      if (entry) {
+        entry.count++;
+        if (emote && !entry.emoteId) entry.emoteId = emote[1];
+      } else {
+        counts.set(key, {
+          count: 1,
+          display: cleaned,
+          emoteId: emote ? emote[1] : null,
+        });
+      }
     }
   }
-  let best: { count: number; display: string } | null = null;
+  let best: DominantToken | null = null;
   for (const entry of counts.values()) {
     if (!best || entry.count > best.count) best = entry;
   }
   // require an actual spam-let, not a word that appeared twice
-  return best && best.count >= 5 ? best.display : null;
+  return best && best.count >= 5 ? best : null;
 }
 
 function detectMoments(
@@ -132,7 +147,10 @@ function detectMoments(
       id: `moment-${String(i + 1).padStart(2, "0")}`,
       start_seconds: start,
       end_seconds: end,
-      title: token ? `Chat erupts: “${token}”` : "Chat erupts",
+      title: token ? `Chat erupts: “${token.display}”` : "Chat erupts",
+      emote: token?.emoteId
+        ? { id: token.emoteId, name: token.display }
+        : undefined,
       description: `${messageCount} messages from ${unique.size} chatters in ${end - start}s`,
       unique_chatters: unique.size,
       peak_intensity: peak.intensity,

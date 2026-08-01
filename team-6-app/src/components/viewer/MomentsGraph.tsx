@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 
+import { emoteUrl } from "@/lib/chat-pulse";
 import { HIGHLIGHT_BUCKET_SECONDS } from "@/lib/mocks/highlights";
 import type { HighlightsResponse } from "@/types/api";
 import type { Moment } from "@/types/features";
@@ -184,12 +186,24 @@ export default function MomentsGraph({
 
       {activeMoment && (
         <div
-          className="pointer-events-none absolute bottom-full mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-black/90 px-2 py-1 text-[11px] font-semibold text-white"
+          className="pointer-events-none absolute bottom-full mb-1.5 flex -translate-x-1/2 items-center whitespace-nowrap rounded bg-black/90 px-2 py-1 text-[11px] font-semibold text-white"
           style={{
             left: `${Math.min(Math.max((momentCenter(activeMoment) / liveEdge) * 100, 8), 92)}%`,
           }}
         >
-          {activeMoment.title}
+          {activeMoment.emote ? (
+            <Image
+              src={emoteUrl(activeMoment.emote.id)}
+              alt={activeMoment.emote.name}
+              title={activeMoment.emote.name}
+              width={20}
+              height={20}
+              unoptimized
+              className="size-5 object-contain"
+            />
+          ) : (
+            activeMoment.title
+          )}
           <span className="ml-1.5 font-normal text-white/60">
             {activeMoment.unique_chatters} chatters
           </span>
