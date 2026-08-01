@@ -76,7 +76,7 @@ route handlers serving the mock datasets.
 - Files: `src/app/api/*/route.ts`, reading from `src/lib/mocks/*`; response types in `src/types/` (added `ChatResponse` to `src/types/kick.ts`).
 - Depends on: T0 (can start anytime; datasets get richer via T4/T6/T7/T8).
 - Done when: all routes return typed JSON matching `src/types/`, documented in README.
-- Note: `highlights`/`chapters`/`sentiment` mocks are still empty arrays (T6/T7/T8 not built yet) — the routes already filter by `until` correctly, so they'll "just work" once those mocks are filled in.
+- Note: all five mock datasets are now populated (9 engagement buckets + 4 moments, 8 chapters, 9 sentiment points), keyed to the same 0-270s stream clock as `chat-messages.ts`. T6/T7/T8 can build against real-looking data; tune the numbers freely as those features firm up.
 
 ## T6 — Highlights / Moments graph (FEATURE)
 

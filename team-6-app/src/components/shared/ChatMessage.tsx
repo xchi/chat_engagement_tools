@@ -1,6 +1,44 @@
 import { Bot, Gift, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 
 import type { KickBadge, KickChatMessage } from "@/types/kick";
+
+/** Matches Kick's inline emote token, e.g. "[emote:37226:KEKW]". */
+const EMOTE_TOKEN = /\[emote:(\d+):(\w+)\]/g;
+
+/** Splits message content into text and emote-image parts for rendering. */
+function renderContent(content: string) {
+  const parts: (string | { id: string; name: string })[] = [];
+  let lastIndex = 0;
+
+  for (const match of content.matchAll(EMOTE_TOKEN)) {
+    if (match.index > lastIndex) {
+      parts.push(content.slice(lastIndex, match.index));
+    }
+    parts.push({ id: match[1], name: match[2] });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < content.length) {
+    parts.push(content.slice(lastIndex));
+  }
+
+  return parts.map((part, i) =>
+    typeof part === "string" ? (
+      <span key={i}>{part}</span>
+    ) : (
+      <Image
+        key={i}
+        src={`https://files.kick.com/emotes/${part.id}/fullsize`}
+        alt={part.name}
+        title={part.name}
+        width={24}
+        height={24}
+        unoptimized
+        className="mx-0.5 inline-block h-6 w-6 align-middle"
+      />
+    ),
+  );
+}
 
 function BadgeChip({ badge }: { badge: KickBadge }) {
   const base =
@@ -54,7 +92,7 @@ export default function ChatMessage({ message }: { message: KickChatMessage }) {
         {message.username}
       </span>
       <span className="text-muted-foreground">: </span>
-      <span className="break-words">{message.content}</span>
+      <span className="break-words">{renderContent(message.content)}</span>
     </div>
   );
 }
