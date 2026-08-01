@@ -43,8 +43,9 @@ version: a mocked video that "looks live" + chat replay keyed to a shared
 - **Moments graph** (viewer): YouTube "most replayed"-style engagement curve
   over the video scrub bar — peaks = moments with most unique-chatter
   interaction.
-- **Live chapters** (viewer): chapters appearing over time from mocked
-  caption/topic changes.
+- **Live chapters** (viewer): chapters popping in over time, presented as
+  AI-generated from the stream's captions (seek-bar ticks + a "Processing
+  captions… → Generating chapter…" beat in the player controls).
 - **Sentiment analysis** (creator dashboard): live chart of chat sentiment.
 
 ## Project layout
@@ -68,9 +69,8 @@ src/
     features.ts         draft schemas for OUR new features
 ```
 
-The remaining feature components (`ChaptersBar`, `SentimentPanel`) are still
-stubs with a comment describing their responsibility and which task (T#)
-implements them.
+All feature components are implemented (T3–T8b); see TASKS.md for what each
+one does and where it lives.
 
 ## Schemas
 
@@ -98,7 +98,8 @@ live in `src/types/api.ts` (re-exporting the feature responses from
 - `GET /api/highlights?until=` → `HighlightsResponse` — engagement curve
   (unique chatters per 30s bucket) + peak moments.
 - `GET /api/chapters?until=` → `ChaptersResponse` — chapters already started
-  (hand-authored in `src/lib/mocks/chapters.ts`; filled in T7).
+  (hand-authored against the actual VOD in `src/lib/mocks/chapters.ts`,
+  framed as caption-derived AI output — see T7).
 - `GET /api/sentiment?until=` → `SentimentResponse` — chat sentiment trend
   (60s window, one point every 30s).
 

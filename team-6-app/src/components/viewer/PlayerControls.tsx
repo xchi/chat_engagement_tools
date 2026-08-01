@@ -11,6 +11,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import ChaptersBar, {
+  ChapterStatus,
+  useChapters,
+} from "@/components/viewer/ChaptersBar";
 import MomentsGraph from "@/components/viewer/MomentsGraph";
 import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -38,7 +42,8 @@ interface PlayerControlsProps {
  * PlayerControls — CUSTOM player controls (native <video controls> can't
  * host overlays): play/pause, volume, current / streamed time, and a
  * scrubbable seek bar limited to the already-"streamed" portion. The
- * MomentsGraph (T6) renders on top of this seek bar, synchronized with it.
+ * MomentsGraph (T6) and ChaptersBar ticks (T7) render on top of this seek
+ * bar, synchronized with it; the T7 chapter readout sits in the button row.
  */
 export default function PlayerControls({
   playing,
@@ -58,6 +63,7 @@ export default function PlayerControls({
   const barRef = useRef<HTMLDivElement>(null);
   const scrubbingRef = useRef(false);
   const [hoverSeconds, setHoverSeconds] = useState<number | null>(null);
+  const chaptersState = useChapters(liveEdge);
 
   const playedPct = liveEdge > 0 ? Math.min(100, (currentTime / liveEdge) * 100) : 100;
 
@@ -110,6 +116,13 @@ export default function PlayerControls({
             style={{ left: `${playedPct}%` }}
           />
         </div>
+        <ChaptersBar
+          state={chaptersState}
+          liveEdge={liveEdge}
+          currentTime={currentTime}
+          hoverSeconds={hoverSeconds}
+          onSeek={onSeek}
+        />
         {hoverSeconds !== null && liveEdge > 0 && (
           <span
             className="pointer-events-none absolute bottom-5 -translate-x-1/2 rounded bg-black/90 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-white"
@@ -177,6 +190,12 @@ export default function PlayerControls({
           {formatDuration(currentTime)}
           <span className="text-white/50"> / {formatDuration(liveEdge)}</span>
         </span>
+
+        <ChapterStatus
+          state={chaptersState}
+          currentTime={currentTime}
+          onSeek={onSeek}
+        />
 
         <div className="flex-1" />
 

@@ -91,18 +91,19 @@ meaningful moments.
 - Done when: hovering the bar shows the curve aligned to video time; clicking a peak seeks; new buckets appear over time.
 - Demo note (for T9): the 5 h join offset (T3) puts 10 of the 12 detected moments on the bar at page load; the last two pop in at ~5h28m and ~5h47m uptime, so a live pop-in only shows if the session runs that long. Moment spans render in Kick green over the white curve (brighter while hovered), with intensity floor+gamma emphasis so peaks stand out from ambient chatter.
 
-## T7 — Live chapters (FEATURE)
+## T7 — Live chapters (FEATURE) ✅ (done)
 
 **Goal:** chapters appear live as the stream progresses, presented as if an
 AI service is processing the stream's closed captions and deciding both each
 chapter's title and when a topic change warrants starting a new one.
 
 - Concept: Kick has no captions/chapters feature — this is a demo conceit, modeled on Loom's AI chapters (video divided into clickable timestamped sections for navigation, titles auto-generated). We don't build the real CC pipeline; we build just enough to *show the idea working*: the mock API reveals pre-authored chapters over time, and the UI sells the story with a visible "processing captions… → generating chapter…" state before each new chapter pops in.
-- Data: `GET /api/chapters` → `ChaptersResponse`. Fill `src/lib/mocks/chapters.ts` with chapters matching the video's content — hand-authored, but framed as caption-derived AI output.
-- UI: `ChaptersBar` integrated with the scrub bar — markers/labels on or under the timeline, aligned with video time; current chapter title visible; clicking a chapter seeks to it. When the clock passes a chapter's `start_seconds`, show a brief processing/generating indicator, then the new chapter pops in.
+- Data: `GET /api/chapters?until=` → `ChaptersResponse`. `src/lib/mocks/chapters.ts` holds 13 chapters hand-authored against the actual VOD (frames sampled with ffmpeg + chat replay cross-checked), framed as caption-derived AI output — van hangout with Ryan Garcia → Hollywood Blvd meet & greet → boxing gym / Gorlock sparring → ice bath → … → late-night Maserati run.
+- UI: `ChaptersBar` (all chapter UI in one file, mounted by `PlayerControls`): `useChapters()` polls `?until=` every 10s and runs the reveal state machine; chapter-start **ticks on the seek bar** (green = chapter being watched, click seeks, hover shows the chapter title above the timestamp tooltip) and a **`ChapterStatus` readout** in the controls row showing the current chapter (click = jump to its start). When a poll returns a new chapter: "Processing captions…" → "Generating chapter…" (pulsing, ~5.6s) → green "New chapter: {title}" announcement + tick pops in. Tuning in mid-stream shows the backlog instantly without replaying the beat.
 - Files: `src/components/viewer/ChaptersBar.tsx`, `src/lib/mocks/chapters.ts`, `src/app/api/chapters/route.ts`
 - Depends on: T3 (custom seek bar), T5.
 - Done when: chapters appear over time with a visible "generating" beat, markers align with the scrub bar, and clicking one seeks the video.
+- Demo note (for T9): with the 5 h join offset (T3), 10 chapters are on the bar at page load; ch-11 "Home again: feeding the puppy" pops in at ~13 min uptime (5h13), ch-12 at ~27 min, ch-13 at ~53 min. To show the generating beat inside a 5-minute demo, bump `STREAM_START_OFFSET_SECONDS` to e.g. `5*60*60 + 11*60` (chapter pops ~2 min in).
 
 ## T8 — Sentiment analysis panel (FEATURE) ✅ (done)
 
