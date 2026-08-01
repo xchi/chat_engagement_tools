@@ -44,38 +44,38 @@ card, Channel Actions card, right icon rail).
 - Depends on: T0 (independent of T1 — can run in parallel).
 - Done when: `/creator` visually matches the reference layout, panels are componentized, toggles are cosmetic.
 
-## T3 — Mock "live" stream engine
+## T3 — Mock "live" stream engine ✅ (done)
 
-**Goal:** make the app feel live. A looping local video (file TBD — will be
-added to `public/`) presented as a live stream, plus the shared **stream
-clock**.
+**Goal:** make the app feel live. A looping local video presented as a live
+stream, plus the shared **stream clock**.
 
-- Stream clock: elapsed seconds since mock stream start; exposed via a small provider/hook (e.g. `src/lib/stream-clock.ts(x)`) that any component can read. Suggestion: page load = stream already N minutes in, so there's history for the features to show.
-- Video: LIVE badge, elapsed timer, jittering viewer count.
-- **Custom `PlayerControls`** (native `<video controls>` can't host overlays): play/pause, volume, current time / total "streamed" time, scrubbable seek bar limited to the already-streamed portion. This seek bar is the surface T6 draws on.
-- Files: `src/components/viewer/{VideoPlayer,PlayerControls}.tsx`, `src/lib/stream-clock.ts(x)`
+- Stream clock: `StreamClockProvider` / `useStreamClock()` in `src/lib/stream-clock.tsx`, mounted in the root layout so any component can read it. Page load = stream already 45 min in (`STREAM_START_OFFSET_SECONDS`), so there's history for the features to show. `useViewerCount()` derives the jittering viewer count from the same clock.
+- Video: `public/n3on_x_ryan_garcia_day_2.mp4` — 6h21m Kick VOD capture, gitignored; regen command in README Notes. Joining the page tunes in at the live edge (`clock % duration`); overlays show the LIVE badge, uptime timer and jittering viewer count.
+- **Custom `PlayerControls`** (native `<video controls>` can't host overlays): play/pause, volume, current time / total "streamed" time, scrubbable seek bar limited to the already-streamed portion (hover = timestamp tooltip). This seek bar is the surface T6 draws on. Scrubbed back → "GO TO LIVE" returns to the edge.
+- Files: `src/components/viewer/{VideoPlayer,PlayerControls}.tsx`, `src/lib/stream-clock.tsx`
 - Depends on: T1 (video area exists).
 - Done when: video plays "live", scrubbing back and returning to live works, clock is readable from any component.
 
-## T4 — Chat replay engine
+## T4 — Chat replay engine ✅ (done)
 
 **Goal:** chat that streams in "real time", keyed to the stream clock.
 
-- Fill `src/lib/mocks/chat-messages.ts` with a timestamped dataset (`offset_seconds` per message; schema `KickChatMessage` based on Kick's `chat.message.sent` event — real examples in `../kick-chat-explorer/output.json`). Make it demo-worthy: bursts around the moments T6 will highlight, unique-chatter spikes, some gifted-KICKs bot lines.
-- Replay: reveal messages as the clock passes their offset, in the viewer ChatPanel and the dashboard Chat.
-- Files: `src/lib/mocks/chat-messages.ts`, `src/components/shared/ChatPanel.tsx`
+- Dataset: `scripts/build-chat-replay.mjs` processes the real capture `assets/n3on_x_ryan_garcia_day_2_messages.json` (70,684 messages `{content, createdAt, id, userId, username}` from the same stream as the T3 video, same 6h21m span) into `public/chat-replay.json` — compact `[offset_seconds, username, content]` rows (`offset_seconds` = `createdAt` minus the first message's) plus seeded KickBot "gifted KICKs" lines every few minutes. Gitignored like the VOD; regen command in README. Real bursts/unique-chatter spikes survive intact for T6 to highlight.
+- Replay: `loadChatReplay()` in `src/lib/mocks/chat-messages.ts` fetches the dataset once (shared by both panels), enriches usernames with deterministic Kick-style colors/badges, and falls back to tiling the seeded messages if the file is missing. `ChatPanel` reveals messages as the clock passes their offset (capped at 150 in the DOM), auto-scrolls, and pauses on scroll-up with Kick's "Chat paused due to scroll" pill. `ChatMessage` renders `[emote:{id}:{name}]` tokens as inline images from `https://files.kick.com/emotes/{id}/fullsize`.
+- Files: `scripts/build-chat-replay.mjs`, `src/lib/mocks/chat-messages.ts`, `src/components/shared/{ChatPanel,ChatMessage}.tsx`
 - Depends on: T3 (stream clock), T1/T2 (panels exist).
 - Done when: both pages show the same chat flowing live; scrubbing the video does NOT rewind chat (chat follows the live edge, like real Kick).
 
-## T5 — Mock API layer
+## T5 — Mock API layer ✅ (done)
 
 **Goal:** features consume "an API" as they would in production — Next.js
 route handlers serving the mock datasets.
 
-- Routes: `GET /api/channel`, `GET /api/chat?from=&to=` (offset-seconds range), `GET /api/highlights?until=`, `GET /api/chapters?until=`, `GET /api/sentiment?until=` — `until` = stream-clock position, so responses only contain data "up to now".
-- Files: `src/app/api/*/route.ts`, reading from `src/lib/mocks/*`; response types in `src/types/`.
+- Routes: `GET /api/channel`, `GET /api/chat?from=&to=&limit=` (offset-seconds range `[from, to)`, newest-`limit` capped), `GET /api/highlights?until=`, `GET /api/chapters?until=`, `GET /api/sentiment?until=` — `until` = stream-clock position, so responses only contain data "up to now". Invalid params → 400 `{error}`.
+- Highlights (30s unique-chatter buckets + auto-detected peak moments titled by the token chat was spamming) and sentiment (lexicon-scored 60s windows) are **derived server-side from the T4 chat dataset** (`buildHighlights`/`buildSentiment` in `src/lib/mocks/`), so they stay consistent with chat automatically. Chapters stay hand-authored (T7).
+- Files: `src/app/api/*/route.ts`, `src/lib/server/{chat-replay,params}.ts` (fs loader for `public/chat-replay.json` + param parsing), reading from `src/lib/mocks/*`; response types in `src/types/api.ts`.
 - Depends on: T0 (can start anytime; datasets get richer via T4/T6/T7/T8).
-- Done when: all routes return typed JSON matching `src/types/`, documented in README.
+- Done when: all routes return typed JSON matching `src/types/`, documented in README ("Mock API").
 
 ## T6 — Highlights / Moments graph (FEATURE)
 
@@ -84,7 +84,7 @@ the video scrub bar, synchronized with it**. Peaks = past moments with the
 most unique-chatter interaction, so viewers scrubbing can spot and jump to
 meaningful moments.
 
-- Data: `GET /api/highlights` → `HighlightsResponse` (per-bucket unique-chatter intensity + moment metadata). Fill `src/lib/mocks/highlights.ts` consistently with the T4 chat dataset.
+- Data: `GET /api/highlights` → `HighlightsResponse` (per-bucket unique-chatter intensity + moment metadata) — already derived from the T4 chat dataset by T5; hand-curate moment titles via `curatedMoments` in `src/lib/mocks/highlights.ts` if the auto ones read poorly.
 - UI: curve above/over the seek bar (visible on hover/scrub like YouTube); moment labels on hover; click a peak → seek there; curve extends live as the clock advances.
 - Files: `src/components/viewer/MomentsGraph.tsx`, `src/lib/mocks/highlights.ts`, `src/app/api/highlights/route.ts`
 - Depends on: T3 (custom seek bar), T5.
@@ -92,20 +92,22 @@ meaningful moments.
 
 ## T7 — Live chapters (FEATURE)
 
-**Goal:** chapters appear live as the stream progresses, mocked as topic
-changes derived from the video captions.
+**Goal:** chapters appear live as the stream progresses, presented as if an
+AI service is processing the stream's closed captions and deciding both each
+chapter's title and when a topic change warrants starting a new one.
 
-- Data: `GET /api/chapters` → `ChaptersResponse`. Fill `src/lib/mocks/chapters.ts` with chapters matching the (TBD) video's content.
-- UI: `ChaptersBar` markers/labels on or under the timeline; current chapter title visible; clicking a chapter seeks to it; a new chapter pops in when the clock passes its `start_seconds`.
+- Concept: Kick has no captions/chapters feature — this is a demo conceit, modeled on Loom's AI chapters (video divided into clickable timestamped sections for navigation, titles auto-generated). We don't build the real CC pipeline; we build just enough to *show the idea working*: the mock API reveals pre-authored chapters over time, and the UI sells the story with a visible "processing captions… → generating chapter…" state before each new chapter pops in.
+- Data: `GET /api/chapters` → `ChaptersResponse`. Fill `src/lib/mocks/chapters.ts` with chapters matching the video's content — hand-authored, but framed as caption-derived AI output.
+- UI: `ChaptersBar` integrated with the scrub bar — markers/labels on or under the timeline, aligned with video time; current chapter title visible; clicking a chapter seeks to it. When the clock passes a chapter's `start_seconds`, show a brief processing/generating indicator, then the new chapter pops in.
 - Files: `src/components/viewer/ChaptersBar.tsx`, `src/lib/mocks/chapters.ts`, `src/app/api/chapters/route.ts`
-- Depends on: T3, T5.
-- Done when: chapters appear over time and clicking one seeks the video.
+- Depends on: T3 (custom seek bar), T5.
+- Done when: chapters appear over time with a visible "generating" beat, markers align with the scrub bar, and clicking one seeks the video.
 
 ## T8 — Sentiment analysis panel (FEATURE)
 
 **Goal:** creator dashboard panel charting live chat sentiment.
 
-- Data: `GET /api/sentiment` → `SentimentResponse` (score trend −1..1 + positive/neutral/negative breakdown). Fill `src/lib/mocks/sentiment.ts` consistently with the T4 chat dataset (e.g. sentiment dips where chat gets salty).
+- Data: `GET /api/sentiment` → `SentimentResponse` (score trend −1..1 + positive/neutral/negative breakdown) — already derived from the T4 chat dataset by T5 (real dips where chat gets salty); tune the lexicons in `src/lib/mocks/sentiment.ts` if the mood reads wrong.
 - UI: `SentimentPanel` on `/creator` — trend chart + current breakdown, updating as the clock advances.
 - Files: `src/components/creator/SentimentPanel.tsx`, `src/lib/mocks/sentiment.ts`, `src/app/api/sentiment/route.ts`
 - Depends on: T2, T3 (clock), T5.

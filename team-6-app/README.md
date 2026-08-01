@@ -80,10 +80,63 @@ comment describing their responsibility and which task (T#) implements them.
 - `src/types/features.ts` is ours (highlights/moments, chapters, sentiment).
 
 All types are **drafts** — evolve them as the features firm up; just keep the
-mock API responses (`src/lib/mocks/`, later `src/app/api/`) in sync.
+mock API responses (`src/lib/mocks/`, `src/app/api/`) in sync.
+
+## Mock API (T5)
+
+The datasets are served through Next.js route handlers (`src/app/api/`), so
+features consume "an API" as they would in production. Response envelopes
+live in `src/types/api.ts` (re-exporting the feature responses from
+`src/types/features.ts`); invalid params answer 400 `{ "error": string }`.
+
+- `GET /api/channel` → `ChannelResponse` — the mocked channel payload.
+- `GET /api/chat?from=&to=&limit=` → `ChatResponse` — messages in the
+  half-open offset-seconds range `[from, to)`. Defaults to the whole stream;
+  when more than `limit` (default 500, max 5000) match, the **newest** are
+  kept (`total` reports the uncapped count). Pollers page gap-free with
+  `from = previous to`.
+- `GET /api/highlights?until=` → `HighlightsResponse` — engagement curve
+  (unique chatters per 30s bucket) + peak moments.
+- `GET /api/chapters?until=` → `ChaptersResponse` — chapters already started
+  (hand-authored in `src/lib/mocks/chapters.ts`; filled in T7).
+- `GET /api/sentiment?until=` → `SentimentResponse` — chat sentiment trend
+  (60s window, one point every 30s).
+
+`until` is a stream-clock position: responses only contain data "up to now"
+(pass `useStreamClock()`'s current value); omit it to get the full stream.
+
+Highlights and sentiment aren't hand-seeded — they're **derived
+server-side from the T4 chat replay dataset** (`buildHighlights` /
+`buildSentiment` in `src/lib/mocks/`), so curve peaks, moment titles (the
+token chat was spamming) and mood swings always agree with what the chat
+panel shows. Hand-curation hooks: `curatedMoments` in
+`src/lib/mocks/highlights.ts` (T6/T9) and the sentiment lexicons in
+`src/lib/mocks/sentiment.ts` (T8/T9). Without `public/chat-replay.json`
+everything falls back to the looped seed messages, same as the chat panels.
 
 ## Notes
 
-- The "live" video is a looping local file (not sourced yet — will land in
-  `public/` as part of T3).
+- The "live" video is `public/n3on_x_ryan_garcia_day_2.mp4` — a lossless remux
+  of the captured Kick VOD `assets/n3on_x_ryan_garcia_day_2.ts` (H.264/AAC,
+  6h21m). Both are gitignored (multi-GB); regenerate the mp4 with:
+  ```bash
+  ffmpeg -i assets/n3on_x_ryan_garcia_day_2.ts -map 0:v:0 -map 0:a:0 \
+    -c copy -movflags +faststart public/n3on_x_ryan_garcia_day_2.mp4
+  ```
+- The chat replay dataset is `public/chat-replay.json` — compact
+  `[offset_seconds, username, content]` rows generated from the matching chat
+  capture `assets/n3on_x_ryan_garcia_day_2_messages.json` (70,684 messages,
+  ~14 MB, spanning the same 6h21m as the video), plus injected KickBot
+  "gifted KICKs" lines. Also gitignored; regenerate with:
+  ```bash
+  node scripts/build-chat-replay.mjs
+  ```
+  Usernames get deterministic colors/badges at runtime (the capture has
+  none) in `src/lib/mocks/chat-messages.ts`. Emote syntax
+  `[emote:{id}:{name}]`; images at
+  `https://files.kick.com/emotes/{id}/fullsize`. Without the generated file,
+  chat falls back to looping the small seeded dataset.
+- The **stream clock** (`src/lib/stream-clock.tsx`) is the single source of
+  truth for "how long has the stream been live"; it's mounted in the root
+  layout — read it anywhere with `useStreamClock()`.
 - No real Kick API calls anywhere; don't add credentials to this app.

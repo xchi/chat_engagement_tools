@@ -6,7 +6,7 @@ import { formatCount } from "@/lib/format";
 import { mockChannel } from "@/lib/mocks/channel";
 
 /** mock-only: the followers-goal card needs a target to count toward */
-const FOLLOWERS_GOAL = 104_300;
+const FOLLOWERS_GOAL = 750_000;
 
 /** "About {channel}" card + followers-goal progress card. */
 export default function AboutPanel() {
@@ -19,7 +19,7 @@ export default function AboutPanel() {
       <div className="rounded-lg bg-card p-5 lg:col-span-2">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="flex items-center gap-1 text-lg font-bold">
-            About TheDoctor
+            About {mockChannel.display_name ?? mockChannel.slug}
             <BadgeCheck className="size-4 fill-primary text-primary-foreground" />
           </h2>
           <span className="font-bold">{formatCount(followers)} Followers</span>
@@ -27,11 +27,11 @@ export default function AboutPanel() {
         <ul className="mt-4 space-y-2 text-sm">
           <li className="flex items-center gap-2">
             <AtSign className="size-4 text-muted-foreground" />
-            thedoctorsocial/
+            n3on/
           </li>
           <li className="flex items-center gap-2">
             <X className="size-4 text-muted-foreground" />
-            TheDoctorGamble
+            N3ONKICK
           </li>
         </ul>
       </div>

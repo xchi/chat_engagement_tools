@@ -1,3 +1,5 @@
+import { memo } from "react";
+import Image from "next/image";
 import { Bot, Gift, ShieldCheck } from "lucide-react";
 
 import type { KickBadge, KickChatMessage } from "@/types/kick";
@@ -38,8 +40,37 @@ function BadgeChip({ badge }: { badge: KickBadge }) {
   }
 }
 
-/** A single chat line: badges, colored username, content. */
-export default function ChatMessage({ message }: { message: KickChatMessage }) {
+/** Kick encodes emotes inline as `[emote:{id}:{name}]`. */
+const EMOTE_PATTERN = /\[emote:(\d+):([^\]]*)\]/g;
+
+/** Message content with emote tokens swapped for their images. */
+function renderContent(content: string): React.ReactNode {
+  if (!content.includes("[emote:")) return content;
+
+  const nodes: React.ReactNode[] = [];
+  let last = 0;
+  for (const match of content.matchAll(EMOTE_PATTERN)) {
+    if (match.index > last) nodes.push(content.slice(last, match.index));
+    nodes.push(
+      <Image
+        key={`${match.index}-${match[1]}`}
+        src={`https://files.kick.com/emotes/${match[1]}/fullsize`}
+        alt={match[2]}
+        title={match[2]}
+        width={24}
+        height={24}
+        unoptimized
+        className="inline-block size-6 object-contain align-text-bottom"
+      />,
+    );
+    last = match.index + match[0].length;
+  }
+  if (last < content.length) nodes.push(content.slice(last));
+  return nodes;
+}
+
+/** A single chat line: badges, colored username, content with emotes. */
+function ChatMessage({ message }: { message: KickChatMessage }) {
   return (
     <div className="rounded px-2 py-0.5 text-sm leading-6 hover:bg-accent/50">
       {message.identity?.badges.map((badge, i) => (
@@ -54,7 +85,11 @@ export default function ChatMessage({ message }: { message: KickChatMessage }) {
         {message.username}
       </span>
       <span className="text-muted-foreground">: </span>
-      <span className="break-words">{message.content}</span>
+      <span className="break-words">{renderContent(message.content)}</span>
     </div>
   );
 }
+
+// Rows re-render every clock tick while the panel streams; memo keeps the
+// unchanged (immutable) lines out of that work.
+export default memo(ChatMessage);

@@ -1,3 +1,5 @@
+"use client";
+
 import { BadgeCheck, Flag, Gift, Heart, Share2, Star, Users } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -5,10 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCount } from "@/lib/format";
 import { mockChannel } from "@/lib/mocks/channel";
+import { useViewerCount } from "@/lib/stream-clock";
 
 /** Row under the video: channel identity, title/category/tags, follow & subscribe actions. */
 export default function StreamInfoBar() {
-  const { stream, stream_title, category, slug } = mockChannel;
+  const { stream, stream_title, category, slug, display_name } = mockChannel;
+  const viewers = useViewerCount(stream.viewer_count);
 
   return (
     <section className="flex flex-wrap items-start justify-between gap-4 px-4 py-4">
@@ -26,7 +30,7 @@ export default function StreamInfoBar() {
 
         <div className="min-w-0">
           <h1 className="flex items-center gap-1 text-lg font-bold">
-            TheDoctor
+            {display_name ?? slug}
             <BadgeCheck className="size-4 fill-primary text-primary-foreground" />
           </h1>
           <p className="truncate text-sm">{stream_title}</p>
@@ -68,7 +72,7 @@ export default function StreamInfoBar() {
         <div className="flex items-center gap-2 text-sm">
           <span className="flex items-center gap-1.5 font-semibold">
             <Users className="size-4" />
-            {formatCount(stream.viewer_count)} watching
+            {formatCount(viewers)} watching
           </span>
           <Button variant="ghost" size="icon-sm" aria-label="Share">
             <Share2 />

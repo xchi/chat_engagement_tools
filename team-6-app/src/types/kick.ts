@@ -26,6 +26,8 @@ export interface KickStream {
 export interface KickChannel {
   broadcaster_user_id: number;
   slug: string;
+  /** mock-only: cased display name for headings ("N3on" vs slug "n3on") */
+  display_name?: string;
   channel_description: string;
   banner_picture: string;
   stream: KickStream;

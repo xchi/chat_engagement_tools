@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Captured VOD — the .ts extension is MPEG transport stream, not TypeScript.
+    "assets/**",
   ]),
 ]);
 
