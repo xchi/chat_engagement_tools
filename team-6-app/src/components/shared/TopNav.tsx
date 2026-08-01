@@ -87,13 +87,13 @@ export default function TopNav({ variant = "viewer" }: TopNavProps) {
             >
               <Avatar className="size-8">
                 <AvatarFallback className="bg-emerald-700 text-xs font-bold">
-                  JP
+                  BC
                 </AvatarFallback>
               </Avatar>
             </button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-56 p-2">
-            <p className="px-2 py-1.5 text-sm font-bold">jp_saturnino</p>
+            <p className="px-2 py-1.5 text-sm font-bold">The Brazil China Treaty</p>
             <Separator className="my-1" />
             <Button asChild variant="ghost" className="w-full justify-start">
               <Link href="/creator">
