@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import MomentsGraph from "@/components/viewer/MomentsGraph";
 import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -94,6 +95,11 @@ export default function PlayerControls({
         }}
         onPointerLeave={() => setHoverSeconds(null)}
       >
+        <MomentsGraph
+          liveEdge={liveEdge}
+          hoverSeconds={hoverSeconds}
+          onSeek={onSeek}
+        />
         <div className="relative h-1 w-full rounded-full bg-white/25 transition-[height] group-hover/seek:h-1.5">
           <div
             className="absolute inset-y-0 left-0 rounded-full bg-primary"

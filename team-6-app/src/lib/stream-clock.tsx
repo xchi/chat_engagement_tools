@@ -12,7 +12,7 @@ import { createContext, useContext, useEffect, useState } from "react";
  * STREAM_START_OFFSET_SECONDS in, so the features have history to show.
  */
 
-export const STREAM_START_OFFSET_SECONDS = 45 * 60;
+export const STREAM_START_OFFSET_SECONDS = 5 * 60 * 60;
 
 /** Looping local VOD presented as the live feed (see README Notes). */
 export const STREAM_VIDEO_SRC = "/n3on_x_ryan_garcia_day_2.mp4";
