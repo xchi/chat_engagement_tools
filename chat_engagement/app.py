@@ -31,6 +31,46 @@ MAX_POINTS = 500
 MIN_GAP_SECONDS = 4
 MAX_GAP_SECONDS = 10
 
+EMOTES = {
+    "hype": [
+        "https://files.kick.com/emotes/37226/fullsize",   # KEKW
+        "https://files.kick.com/emotes/37233/fullsize",   # PogU
+        "https://files.kick.com/emotes/4148074/fullsize", # HYPERCLAP
+        "https://files.kick.com/emotes/37232/fullsize",   # PeepoClap
+        "https://files.kick.com/emotes/5756671/fullsize", # GIGACHAD
+        "https://files.kick.com/emotes/5756668/fullsize", # EZ
+        "https://files.kick.com/emotes/5380971/fullsize", # AURAPULSE
+        "https://files.kick.com/emotes/37227/fullsize",   # LULW
+    ],
+    "dropping": [
+        "https://files.kick.com/emotes/5756504/fullsize", # NODDERS
+        "https://files.kick.com/emotes/4148081/fullsize", # Sadge
+        "https://files.kick.com/emotes/4147902/fullsize", # KEKBye
+        "https://files.kick.com/emotes/5756628/fullsize", # MuteD
+        "https://files.kick.com/emotes/5273243/fullsize", # lowCortisol
+    ],
+    "funny": [
+        "https://files.kick.com/emotes/4148076/fullsize", # HaHaa
+        "https://files.kick.com/emotes/5756623/fullsize", # OuttaPocket
+        "https://files.kick.com/emotes/5756632/fullsize", # SUSSY
+        "https://files.kick.com/emotes/5756678/fullsize", # WeirdChamp
+        "https://files.kick.com/emotes/37236/fullsize",   # ThisIsFine
+    ],
+    "vibe": [
+        "https://files.kick.com/emotes/4148144/fullsize", # catblobDance
+        "https://files.kick.com/emotes/4147884/fullsize", # vibePls
+        "https://files.kick.com/emotes/5756644/fullsize", # ratJAM
+        "https://files.kick.com/emotes/37245/fullsize",   # peepoDJ
+        "https://files.kick.com/emotes/5756616/fullsize", # DanceDance
+    ],
+    "controversy": [
+        "https://files.kick.com/emotes/5756675/fullsize", # peepoRiot
+        "https://files.kick.com/emotes/4147892/fullsize", # PatrickBoo
+        "https://files.kick.com/emotes/5273247/fullsize", # highCortisol
+        "https://files.kick.com/emotes/5273241/fullsize", # MOGGED
+    ],
+}
+
 CATEGORIES = {
     "category-1": "Just Chatting",
     "category-2": "Gaming",
