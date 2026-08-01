@@ -14,9 +14,11 @@ import ActivityFeed from "@/components/creator/ActivityFeed";
 import ChannelActionsPanel from "@/components/creator/ChannelActionsPanel";
 import DashboardSidebar from "@/components/creator/DashboardSidebar";
 import ModActions from "@/components/creator/ModActions";
+import SentimentPanel from "@/components/creator/SentimentPanel";
 import SessionInfoBar from "@/components/creator/SessionInfoBar";
 import StreamInfoCard from "@/components/creator/StreamInfoCard";
 import StreamPreview from "@/components/creator/StreamPreview";
+import StreamPulsePanel from "@/components/creator/StreamPulsePanel";
 import ChatPanel from "@/components/shared/ChatPanel";
 import TopNav from "@/components/shared/TopNav";
 import { Button } from "@/components/ui/button";
@@ -33,7 +35,8 @@ const RAIL_ICONS = [
   { icon: Grip, label: "Widgets" },
 ];
 
-/** Kick creator dashboard clone. SentimentPanel (T8) joins the right column later. */
+/** Kick creator dashboard clone + our features: SentimentPanel (T8) in the
+ * main column, StreamPulsePanel (the chrome-extension port) in the right one. */
 export default function CreatorPage() {
   return (
     <div className="flex h-screen flex-col">
@@ -46,6 +49,7 @@ export default function CreatorPage() {
         <main className="min-w-0 flex-1 space-y-3 overflow-y-auto p-3">
           <SessionInfoBar />
           <StreamPreview />
+          <SentimentPanel />
           <div className="grid gap-3 md:grid-cols-2">
             <ActivityFeed />
             <ModActions />
@@ -57,6 +61,7 @@ export default function CreatorPage() {
         </aside>
 
         <aside className="hidden w-[300px] shrink-0 space-y-3 overflow-y-auto border-l border-border p-3 xl:block">
+          <StreamPulsePanel />
           <StreamInfoCard />
           <ChannelActionsPanel />
         </aside>
