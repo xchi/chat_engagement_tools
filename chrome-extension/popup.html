@@ -1,0 +1,9 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kick Stream Pulse</title><link rel="stylesheet" href="popup.css"></head><body>
+  <header><div><small>STREAM TOOLS</small><h1>Chat pulse</h1></div><i></i></header>
+  <p id="status">Open a Kick channel to start listening.</p>
+  <label><span><b>Dashboard overlay</b><small>Show live stats on Kick</small></span><input id="enabled" type="checkbox"></label>
+  <label><span><b>Colour live chat</b><small>React to unique chatters</small></span><input id="color-chat" type="checkbox"></label>
+  <label><span><b>Rolling window</b><small>Audience sampling period</small></span><select id="window"><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option></select></label>
+  <div class="thresholds"><span>ACTIVITY THRESHOLDS</span><label><b>Warm</b><input id="warm" type="number" min="1" max="999"></label><label><b>Hot</b><input id="hot" type="number" min="2" max="999"></label><small>Unique chatters inside the rolling window</small></div>
+  <script src="popup.js"></script>
+</body></html>
